@@ -4,105 +4,150 @@ const ctx = canvas.getContext("2d")
 const grid = 20
 let count = 0
 
+let score = 0
+let speed = 4
+
+let highScore = localStorage.getItem("highscore") || 0
+document.getElementById("highscore").innerText = "High Score: " + highScore
+
+let eatSound = new Audio("sounds/eat.wav")
+let gameOverSound = new Audio("sounds/gameover.wav")
+
 let snake = {
-  x: 160,
-  y: 160,
-  dx: grid,
-  dy: 0,
-  cells: [],
-  maxCells: 4
+x:160,
+y:160,
+dx:grid,
+dy:0,
+cells:[],
+maxCells:4
 }
 
 let apple = {
-  x: 320,
-  y: 320
+x:320,
+y:320
 }
 
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min
+function getRandomInt(min,max){
+return Math.floor(Math.random()*(max-min))+min
 }
 
-function loop() {
+function loop(){
 
-  requestAnimationFrame(loop)
+requestAnimationFrame(loop)
 
-  if (++count < 4) return
-  count = 0
+if(++count < speed) return
+count=0
 
-  ctx.clearRect(0,0,canvas.width,canvas.height)
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
-  snake.x += snake.dx
-  snake.y += snake.dy
+snake.x += snake.dx
+snake.y += snake.dy
 
-  if (snake.x < 0) snake.x = canvas.width - grid
-  else if (snake.x >= canvas.width) snake.x = 0
+if(snake.x < 0) snake.x = canvas.width-grid
+else if(snake.x >= canvas.width) snake.x = 0
 
-  if (snake.y < 0) snake.y = canvas.height - grid
-  else if (snake.y >= canvas.height) snake.y = 0
+if(snake.y < 0) snake.y = canvas.height-grid
+else if(snake.y >= canvas.height) snake.y = 0
 
-  snake.cells.unshift({x: snake.x, y: snake.y})
+snake.cells.unshift({x:snake.x,y:snake.y})
 
-  if (snake.cells.length > snake.maxCells) {
-    snake.cells.pop()
-  }
-
-  ctx.fillStyle = "red"
-  ctx.fillRect(apple.x, apple.y, grid-1, grid-1)
-
-  ctx.fillStyle = "lime"
-
-  snake.cells.forEach(function(cell, index){
-
-    ctx.fillRect(cell.x, cell.y, grid-1, grid-1)
-
-    if (cell.x === apple.x && cell.y === apple.y) {
-      snake.maxCells++
-
-      apple.x = getRandomInt(0,20) * grid
-      apple.y = getRandomInt(0,20) * grid
-    }
-
-    for (let i = index + 1; i < snake.cells.length; i++) {
-
-      if (cell.x === snake.cells[i].x &&
-          cell.y === snake.cells[i].y) {
-
-        snake.x = 160
-        snake.y = 160
-        snake.cells = []
-        snake.maxCells = 4
-        snake.dx = grid
-        snake.dy = 0
-
-        apple.x = getRandomInt(0,20) * grid
-        apple.y = getRandomInt(0,20) * grid
-      }
-    }
-  })
+if(snake.cells.length > snake.maxCells){
+snake.cells.pop()
 }
 
-document.addEventListener("keydown", function(e){
+ctx.fillStyle="red"
+ctx.fillRect(apple.x,apple.y,grid-1,grid-1)
 
-  if (e.which === 37 && snake.dx === 0) {
-    snake.dx = -grid
-    snake.dy = 0
-  }
+ctx.fillStyle="#00ffcc"
 
-  else if (e.which === 38 && snake.dy === 0) {
-    snake.dy = -grid
-    snake.dx = 0
-  }
+snake.cells.forEach(function(cell,index){
 
-  else if (e.which === 39 && snake.dx === 0) {
-    snake.dx = grid
-    snake.dy = 0
-  }
+ctx.fillRect(cell.x,cell.y,grid-1,grid-1)
 
-  else if (e.which === 40 && snake.dy === 0) {
-    snake.dy = grid
-    snake.dx = 0
-  }
+if(cell.x===apple.x && cell.y===apple.y){
+
+snake.maxCells++
+score++
+
+eatSound.play()
+
+document.getElementById("score").innerText="Score: "+score
+
+if(score % 5 === 0){
+speed++
+}
+
+apple.x = getRandomInt(0,20)*grid
+apple.y = getRandomInt(0,20)*grid
+}
+
+for(let i=index+1;i<snake.cells.length;i++){
+
+if(cell.x===snake.cells[i].x && cell.y===snake.cells[i].y){
+
+gameOverSound.play()
+
+if(score > highScore){
+localStorage.setItem("highscore",score)
+}
+
+alert("Game Over! Score: "+score)
+location.reload()
+
+}
+
+}
 
 })
+
+}
+
+document.addEventListener("keydown",function(e){
+
+if(e.which===37 && snake.dx===0){
+snake.dx=-grid
+snake.dy=0
+}
+
+else if(e.which===38 && snake.dy===0){
+snake.dy=-grid
+snake.dx=0
+}
+
+else if(e.which===39 && snake.dx===0){
+snake.dx=grid
+snake.dy=0
+}
+
+else if(e.which===40 && snake.dy===0){
+snake.dy=grid
+snake.dx=0
+}
+
+})
+
+function move(dir){
+
+if(dir==="left" && snake.dx===0){
+snake.dx=-grid
+snake.dy=0
+}
+
+if(dir==="right" && snake.dx===0){
+snake.dx=grid
+snake.dy=0
+}
+
+if(dir==="up" && snake.dy===0){
+snake.dy=-grid
+snake.dx=0
+}
+
+if(dir==="down" && snake.dy===0){
+snake.dy=grid
+snake.dx=0
+}
+
+}
 
 requestAnimationFrame(loop)

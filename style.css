@@ -1,12 +1,30 @@
-body {
-    text-align: center;
-    font-family: Arial;
-    background: #111;
-    color: #eee;
+body{
+background:black;
+color:#00ffcc;
+text-align:center;
+font-family:monospace;
 }
 
-canvas {
-    background: #222;
-    border: 1px solid #555;
-    margin-top: 20px;
+canvas{
+background:#050505;
+border:3px solid #00ffcc;
+box-shadow:0 0 20px #00ffcc;
+margin-top:20px;
+}
+
+h1{
+text-shadow:0 0 10px #00ffcc;
+}
+
+.controls{
+margin-top:20px;
+}
+
+button{
+font-size:20px;
+margin:5px;
+padding:10px;
+background:black;
+color:#00ffcc;
+border:1px solid #00ffcc;
 }
