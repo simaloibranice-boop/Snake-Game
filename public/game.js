@@ -1,3 +1,11 @@
+const socket = io()
+
+let players = {}
+
+socket.on("players",(serverPlayers)=>{
+players = serverPlayers
+})
+
 const canvas = document.getElementById("gameCanvas")
 const ctx = canvas.getContext("2d")
 
@@ -27,6 +35,11 @@ x:320,
 y:320
 }
 
+function sendPosition(x,y){
+socket.emit("move",{x,y})
+}
+
+
 function getRandomInt(min,max){
 return Math.floor(Math.random()*(max-min))+min
 }
@@ -34,6 +47,8 @@ return Math.floor(Math.random()*(max-min))+min
 function loop(){
 
 requestAnimationFrame(loop)
+
+sendPosition(snake.x,snake.y)
 
 if(++count < speed) return
 count=0
